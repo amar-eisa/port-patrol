@@ -11,9 +11,11 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Network, Container, Wifi, WifiOff, RefreshCw, Settings, Clock, Server } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useRefreshInterval } from "@/hooks/useRefreshInterval";
 
 const Index = () => {
-  const { data, loading, error, lastUpdated, refresh, history, serviceEvents } = useVpsData();
+  const { interval: refreshInterval } = useRefreshInterval();
+  const { data, loading, error, lastUpdated, refresh, history, serviceEvents } = useVpsData(refreshInterval);
   const navigate = useNavigate();
 
   const runningServices = data?.services.filter((s) => s.status === "running").length ?? 0;
