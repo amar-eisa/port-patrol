@@ -37,7 +37,7 @@ const ServicesTable = ({ services }: ServicesTableProps) => {
         <h3 className="font-semibold">البورتات والخدمات</h3>
         <p className="text-xs text-muted-foreground mt-1">{services.length} خدمة مسجلة</p>
       </div>
-      <Accordion type="multiple" defaultValue={allKeys} className="px-2">
+      <Accordion type="multiple" defaultValue={[]} className="px-2">
         {groups.map((group) => {
           const running = group.services.filter((s) => s.status === "running").length;
           const stopped = group.services.length - running;
