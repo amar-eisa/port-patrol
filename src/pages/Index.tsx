@@ -5,12 +5,14 @@ import ResourceOverview from "@/components/dashboard/ResourceOverview";
 import DiskUsage from "@/components/dashboard/DiskUsage";
 import NetworkIO from "@/components/dashboard/NetworkIO";
 import ServicesTable from "@/components/dashboard/ServicesTable";
+import CpuRamChart from "@/components/dashboard/CpuRamChart";
+import ServiceTimeline from "@/components/dashboard/ServiceTimeline";
 import { Button } from "@/components/ui/button";
 import { Network, Container, Wifi, WifiOff, RefreshCw, Settings, Clock, Server } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const { data, loading, error, lastUpdated, refresh } = useVpsData();
+  const { data, loading, error, lastUpdated, refresh, history, serviceEvents } = useVpsData();
   const navigate = useNavigate();
 
   const runningServices = data?.services.filter((s) => s.status === "running").length ?? 0;
@@ -96,6 +98,12 @@ const Index = () => {
 
         {/* Network I/O */}
         {data?.network && <NetworkIO network={data.network} />}
+
+        {/* CPU/RAM History Chart */}
+        <CpuRamChart data={history} />
+
+        {/* Service Status Timeline */}
+        <ServiceTimeline events={serviceEvents} />
 
         {/* Services table */}
         {data && <ServicesTable services={data.services} />}
