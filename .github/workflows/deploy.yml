@@ -1,0 +1,47 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main  # أو اسم الفرع الذي تعمل عليه
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        port: 22
+        script: |
+          # 1. الذهاب لمسار المشروع في السيرفر
+          cd /path/to/your/project/folder
+
+          # 2. سحب آخر التعديلات من جيت
+          git pull origin main
+
+          # 3. بناء صورة الدوكر (تمرير المتغيرات هنا لعدم تخزينها في الملفات)
+          # استبدل app-name باسم مشروعك
+          docker build \
+            --build-arg VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }} \
+            --build-arg VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }} \
+            -t port-patrol-app .
+
+          # 4. إيقاف وحذف الحاوية القديمة (إذا وجدت)
+          docker stop port-patrol-container || true
+          docker rm port-patrol-container || true
+
+          # 5. تشغيل الحاوية الجديدة
+          # ربط المنفذ 8003 (السيرفر) بالمنفذ 80 (الداخلي)
+          docker run -d \
+            --name port-patrol-container \
+            --restart unless-stopped \
+            -p 8003:80 \
+            port-patrol-app
