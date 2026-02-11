@@ -23,7 +23,12 @@ serve(async (req) => {
       );
     }
 
-    const response = await fetch(`${vpsUrl}/status`, {
+    const targetUrl = `${vpsUrl}/status`;
+    console.log("Connecting to:", targetUrl);
+    console.log("API Key length:", vpsApiKey.length);
+    console.log("API Key first 4 chars:", vpsApiKey.substring(0, 4));
+
+    const response = await fetch(targetUrl, {
       headers: {
         "X-API-Key": vpsApiKey,
         "Content-Type": "application/json",
