@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { VpsData, mockVpsData } from "@/types/vps";
+import { VpsData } from "@/types/vps";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useVpsData = (refreshInterval = 30) => {
   const [data, setData] = useState<VpsData | null>(null);
@@ -10,21 +11,17 @@ export const useVpsData = (refreshInterval = 30) => {
   const fetchData = useCallback(async () => {
     try {
       setError(null);
-      // TODO: Replace with actual edge function call
-      // For now, use mock data with slight random variation
-      await new Promise((r) => setTimeout(r, 500));
-      const varied = {
-        ...mockVpsData,
-        cpu_percent: Math.max(5, Math.min(95, mockVpsData.cpu_percent + (Math.random() - 0.5) * 10)),
-        ram_percent: Math.max(20, Math.min(90, mockVpsData.ram_percent + (Math.random() - 0.5) * 5)),
-        services: mockVpsData.services.map((s) => ({
-          ...s,
-          cpu_percent: s.status === "running"
-            ? Math.max(0, s.cpu_percent + (Math.random() - 0.5) * 3)
-            : 0,
-        })),
-      };
-      setData(varied);
+      const { data: result, error: fnError } = await supabase.functions.invoke('vps-status');
+      
+      if (fnError) {
+        throw new Error(fnError.message || "فشل في الاتصال بالسيرفر");
+      }
+      
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+      
+      setData(result as VpsData);
       setLastUpdated(new Date());
     } catch (err: any) {
       setError(err.message || "فشل في جلب البيانات");
