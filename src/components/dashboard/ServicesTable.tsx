@@ -17,26 +17,18 @@ const ServicesTable = ({ services }: ServicesTableProps) => (
       <TableHeader>
         <TableRow className="hover:bg-transparent border-border/50">
           <TableHead className="text-right">البورت</TableHead>
-          <TableHead className="text-right">البروتوكول</TableHead>
-          <TableHead className="text-right">الخدمة</TableHead>
-          <TableHead className="text-right">الحاوية</TableHead>
+          <TableHead className="text-right">الاسم</TableHead>
+          <TableHead className="text-right">PID</TableHead>
           <TableHead className="text-right">الحالة</TableHead>
-          <TableHead className="text-right">CPU</TableHead>
-          <TableHead className="text-right">RAM</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {services.map((service) => (
-          <TableRow key={`${service.port}-${service.protocol}`} className="border-border/50">
+          <TableRow key={service.port} className="border-border/50">
             <TableCell className="font-mono font-bold text-primary">{service.port}</TableCell>
-            <TableCell>
-              <Badge variant="outline" className="font-mono text-xs">
-                {service.protocol}
-              </Badge>
-            </TableCell>
-            <TableCell className="font-mono text-sm">{service.service_name}</TableCell>
+            <TableCell className="font-mono text-sm">{service.name}</TableCell>
             <TableCell className="font-mono text-sm text-muted-foreground">
-              {service.container_name || "—"}
+              {service.pid ?? "—"}
             </TableCell>
             <TableCell>
               <Badge
@@ -54,12 +46,6 @@ const ServicesTable = ({ services }: ServicesTableProps) => (
                 )} />
                 {service.status === "running" ? "يعمل" : "متوقف"}
               </Badge>
-            </TableCell>
-            <TableCell className="font-mono text-sm">
-              {service.status === "running" ? `${service.cpu_percent.toFixed(1)}%` : "—"}
-            </TableCell>
-            <TableCell className="font-mono text-sm">
-              {service.status === "running" ? `${service.ram_mb} MB` : "—"}
             </TableCell>
           </TableRow>
         ))}
