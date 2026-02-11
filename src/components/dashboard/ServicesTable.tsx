@@ -67,7 +67,6 @@ const ServicesTable = ({ services }: ServicesTableProps) => {
                     <TableRow className="hover:bg-transparent border-border/50">
                       <TableHead className="text-right">البورت</TableHead>
                       <TableHead className="text-right">الاسم</TableHead>
-                      <TableHead className="text-right">PID</TableHead>
                       <TableHead className="text-right">الحالة</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -76,9 +75,6 @@ const ServicesTable = ({ services }: ServicesTableProps) => {
                       <TableRow key={service.port} className="border-border/50">
                         <TableCell className="font-mono font-bold text-primary">{service.port}</TableCell>
                         <TableCell className="font-mono text-sm">{service.name}</TableCell>
-                        <TableCell className="font-mono text-sm text-muted-foreground">
-                          {service.pid ?? "—"}
-                        </TableCell>
                         <TableCell>
                           <Badge
                             className={cn(
