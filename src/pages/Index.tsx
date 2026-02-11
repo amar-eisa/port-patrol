@@ -1,14 +1,13 @@
-import { useAuth } from "@/hooks/useAuth";
+
 import { useVpsData } from "@/hooks/useVpsData";
 import StatCard from "@/components/dashboard/StatCard";
 import ResourceOverview from "@/components/dashboard/ResourceOverview";
 import ServicesTable from "@/components/dashboard/ServicesTable";
 import { Button } from "@/components/ui/button";
-import { Network, Container, Wifi, WifiOff, RefreshCw, LogOut, Settings, Clock, Server } from "lucide-react";
+import { Network, Container, Wifi, WifiOff, RefreshCw, Settings, Clock, Server } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const { signOut } = useAuth();
   const { data, loading, error, lastUpdated, refresh } = useVpsData();
   const navigate = useNavigate();
 
@@ -36,9 +35,6 @@ const Index = () => {
             </Button>
             <Button variant="ghost" size="icon" onClick={() => navigate("/settings")} title="الإعدادات">
               <Settings className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={signOut} title="تسجيل الخروج">
-              <LogOut className="h-4 w-4" />
             </Button>
           </div>
         </div>
