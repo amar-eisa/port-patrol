@@ -2,6 +2,8 @@
 import { useVpsData } from "@/hooks/useVpsData";
 import StatCard from "@/components/dashboard/StatCard";
 import ResourceOverview from "@/components/dashboard/ResourceOverview";
+import DiskUsage from "@/components/dashboard/DiskUsage";
+import NetworkIO from "@/components/dashboard/NetworkIO";
 import ServicesTable from "@/components/dashboard/ServicesTable";
 import { Button } from "@/components/ui/button";
 import { Network, Container, Wifi, WifiOff, RefreshCw, Settings, Clock, Server } from "lucide-react";
@@ -88,6 +90,12 @@ const Index = () => {
             ramTotalMb={data.ram_total_mb}
           />
         )}
+
+        {/* Disk usage */}
+        {data?.disks && data.disks.length > 0 && <DiskUsage disks={data.disks} />}
+
+        {/* Network I/O */}
+        {data?.network && <NetworkIO network={data.network} />}
 
         {/* Services table */}
         {data && <ServicesTable services={data.services} />}

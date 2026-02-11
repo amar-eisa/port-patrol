@@ -1,3 +1,18 @@
+export interface DiskInfo {
+  mount: string;
+  total_gb: number;
+  used_gb: number;
+  free_gb: number;
+  percent: number;
+}
+
+export interface NetworkInfo {
+  bytes_sent_mb: number;
+  bytes_recv_mb: number;
+  packets_sent: number;
+  packets_recv: number;
+}
+
 export interface VpsData {
   cpu_percent: number;
   ram_percent: number;
@@ -6,6 +21,8 @@ export interface VpsData {
   uptime: string;
   hostname: string;
   services: ServiceInfo[];
+  disks?: DiskInfo[];
+  network?: NetworkInfo;
 }
 
 export interface ServiceInfo {
