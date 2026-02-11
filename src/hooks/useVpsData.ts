@@ -11,7 +11,7 @@ export const useVpsData = (refreshInterval = 30) => {
   const fetchData = useCallback(async () => {
     try {
       setError(null);
-      const { data: result, error: fnError } = await supabase.functions.invoke('vps-status');
+      const { data: result, error: fnError } = await supabase.functions.invoke('server-monitor');
       
       if (fnError) {
         throw new Error(fnError.message || "فشل في الاتصال بالسيرفر");

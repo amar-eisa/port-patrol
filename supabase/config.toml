@@ -2,3 +2,6 @@ project_id = "wlmvzdhvvbbqidhvrdsh"
 
 [functions.vps-status]
 verify_jwt = false
+
+[functions.server-monitor]
+verify_jwt = false
