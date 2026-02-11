@@ -7,6 +7,7 @@ import NetworkIO from "@/components/dashboard/NetworkIO";
 import ServicesTable from "@/components/dashboard/ServicesTable";
 import CpuRamChart from "@/components/dashboard/CpuRamChart";
 import ServiceTimeline from "@/components/dashboard/ServiceTimeline";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Network, Container, Wifi, WifiOff, RefreshCw, Settings, Clock, Server } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +21,7 @@ const Index = () => {
   const isConnected = !error && !!data;
 
   return (
-    <div className="dark min-h-screen bg-background" dir="rtl">
+    <div className="min-h-screen bg-background" dir="rtl">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/50 backdrop-blur sticky top-0 z-10">
         <div className="container flex items-center justify-between h-14 px-4">
@@ -37,6 +38,7 @@ const Index = () => {
             <Button variant="ghost" size="icon" onClick={refresh} disabled={loading} title="تحديث">
               <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             </Button>
+            <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={() => navigate("/settings")} title="الإعدادات">
               <Settings className="h-4 w-4" />
             </Button>
