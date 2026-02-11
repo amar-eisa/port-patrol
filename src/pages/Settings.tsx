@@ -6,14 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Server, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useRefreshInterval } from "@/hooks/useRefreshInterval";
 
 const SettingsPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [refreshInterval, setRefreshInterval] = useState("30");
+  const { interval, setInterval } = useRefreshInterval();
+  const [inputValue, setInputValue] = useState(String(interval));
 
   const handleSave = () => {
-    // TODO: Save to Supabase secrets via edge function
+    setInterval(Number(inputValue));
     toast({
       title: "تم الحفظ",
       description: "تم حفظ الإعدادات بنجاح",
@@ -48,8 +50,8 @@ const SettingsPage = () => {
                 type="number"
                 min="10"
                 max="300"
-                value={refreshInterval}
-                onChange={(e) => setRefreshInterval(e.target.value)}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
                 dir="ltr"
               />
             </div>
