@@ -10,8 +10,6 @@ import { useToast } from "@/hooks/use-toast";
 const SettingsPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [vpsUrl, setVpsUrl] = useState("");
-  const [apiKey, setApiKey] = useState("");
   const [refreshInterval, setRefreshInterval] = useState("30");
 
   const handleSave = () => {
@@ -35,35 +33,7 @@ const SettingsPage = () => {
       </header>
 
       <main className="container px-4 py-6 max-w-xl space-y-6">
-        <Card className="bg-card/80 border-border/50">
-          <CardHeader>
-            <CardTitle className="text-base">اتصال السيرفر</CardTitle>
-            <CardDescription>أدخل بيانات الاتصال بالـ Agent المثبت على السيرفر</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="vps-url">عنوان الـ VPS (IP أو Domain)</Label>
-              <Input
-                id="vps-url"
-                value={vpsUrl}
-                onChange={(e) => setVpsUrl(e.target.value)}
-                placeholder="https://your-vps-ip:5000"
-                dir="ltr"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="api-key">API Key</Label>
-              <Input
-                id="api-key"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="مفتاح الوصول للـ Agent"
-                dir="ltr"
-              />
-            </div>
-          </CardContent>
-        </Card>
+
 
         <Card className="bg-card/80 border-border/50">
           <CardHeader>
