@@ -8,42 +8,32 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Deploy to VPS
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_SSH_KEY }}
-        port: 22
-        # تمرير الأسرار كمتغيرات بيئة محمية
-        envs: VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY
-        script: |
-          cd /var/www/port-patrol
-          git config --global --add safe.directory /var/www/port-patrol
-          git fetch --all
-          git reset --hard origin/main
-          
-          # بناء الصورة مع تنظيف الكاش وحقن الأسرار بعلامات تنصيص
-          docker build \
-            --no-cache \
-            --build-arg VITE_SUPABASE_URL="$VITE_SUPABASE_URL" \
-            --build-arg VITE_SUPABASE_ANON_KEY="$VITE_SUPABASE_ANON_KEY" \
-            -t port-patrol-app .
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            cd /var/www/port-patrol
+            git config --global --add safe.directory /var/www/port-patrol
+            git fetch --all
+            git reset --hard origin/main
             
-          docker stop port-patrol || true
-          docker rm port-patrol || true
-          
-          # تشغيل الحاوية الجديدة
-          docker run -d \
-            --name port-patrol \
-            --restart unless-stopped \
-            -p 8003:80 \
-            port-patrol-app
-      env:
-        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            # حذ ف أي ملفات بيئة قديمة تسبب تعارض مع عملية البناء
+            rm -f .env .env.local .env.production .env.development
+
+            # بناء الصورة مع تمرير الأسرار مباشرة وبدون كاش
+            docker build --no-cache \
+              --build-arg VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}" \
+              --build-arg VITE_SUPABASE_ANON_KEY="${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
+              -t port-patrol-app .
+              
+            docker stop port-patrol || true
+            docker rm port-patrol || true
+            docker run -d --name port-patrol --restart unless-stopped -p 8003:80 port-patrol-app
