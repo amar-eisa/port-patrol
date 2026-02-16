@@ -19,21 +19,29 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
+          # السطر التالي يمرر الأسرار للأكشن كبيئة عمل
+          envs: VITE_URL,VITE_KEY
           script: |
             cd /var/www/port-patrol
             git config --global --add safe.directory /var/www/port-patrol
             git fetch --all
             git reset --hard origin/main
             
-            # حذ ف أي ملفات بيئة قديمة تسبب تعارض مع عملية البناء
-            rm -f .env .env.local .env.production .env.development
-
-            # بناء الصورة مع تمرير الأسرار مباشرة وبدون كاش
+            # --- الحل الجذري ---
+            # إنشاء ملف .env نظيف وحقن القيم فيه مباشرة لضمان وصولها لـ Vite
+            echo "VITE_SUPABASE_URL=$VITE_URL" > .env
+            echo "VITE_SUPABASE_ANON_KEY=$VITE_KEY" >> .env
+            
+            # البناء مع استخدام الملف الذي أنشأناه
             docker build --no-cache \
-              --build-arg VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}" \
-              --build-arg VITE_SUPABASE_ANON_KEY="${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
+              --build-arg VITE_SUPABASE_URL="$VITE_URL" \
+              --build-arg VITE_SUPABASE_ANON_KEY="$VITE_KEY" \
               -t port-patrol-app .
               
             docker stop port-patrol || true
             docker rm port-patrol || true
             docker run -d --name port-patrol --restart unless-stopped -p 8003:80 port-patrol-app
+        env:
+          # تأكد هنا أن المكتوب بعد النقطتين يطابق اسم السر في GitHub تماماً
+          VITE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
