@@ -3,7 +3,7 @@ name: Deploy Port Patrol
 on:
   push:
     branches:
-      - main  # تأكد أن اسم الفرع الرئيسي لديك هو main
+      - main
 
 jobs:
   deploy:
@@ -21,22 +21,24 @@ jobs:
         key: ${{ secrets.VPS_SSH_KEY }}
         port: 22
         script: |
-          # 1. حل مشكلة ملكية المجلد (Fix dubious ownership)
+          # 1. حل مشكلة ملكية المجلد
           git config --global --add safe.directory /var/www/port-patrol
 
           # 2. الذهاب للمسار الصحيح للمشروع
           cd /var/www/port-patrol
 
-          # 3. سحب آخر التعديلات من GitHub
-          git pull origin main
+          # 3. إجبار السيرفر على سحب النسخة الجديدة وتجاهل أي تعديلات محلية
+          # هذا هو الجزء الذي يحل مشكلة عدم تحديث الكود
+          git fetch --all
+          git reset --hard origin/main
 
-          # 4. بناء صورة الدوكر (مع تمرير مفاتيح Supabase)
+          # 4. بناء صورة الدوكر
           docker build \
             --build-arg VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }} \
             --build-arg VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }} \
             -t port-patrol-app .
 
-          # 5. إيقاف وحذف الحاوية القديمة (لتجنب التضارب)
+          # 5. إيقاف وحذف الحاوية القديمة
           docker stop port-patrol || true
           docker rm port-patrol || true
 
