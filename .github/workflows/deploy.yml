@@ -34,8 +34,8 @@ jobs:
 
           # 4. بناء صورة الدوكر
           docker build \
-            --build-arg VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }} \
-            --build-arg VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }} \
+            --build-arg VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}" \
+            --build-arg VITE_SUPABASE_ANON_KEY="${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
             -t port-patrol-app .
 
           # 5. إيقاف وحذف الحاوية القديمة
