@@ -1,3 +1,18 @@
+name: Deploy Port Patrol
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Deploy to VPS
       uses: appleboy/ssh-action@v1.0.3
       with:
@@ -5,7 +20,7 @@
         username: ${{ secrets.VPS_USER }}
         key: ${{ secrets.VPS_SSH_KEY }}
         port: 22
-        # --- السطر السحري لحل المشكلة ---
+        # تمرير الأسرار كمتغيرات بيئة محمية
         envs: VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY
         script: |
           cd /var/www/port-patrol
@@ -13,7 +28,7 @@
           git fetch --all
           git reset --hard origin/main
           
-          # البناء مع تنظيف الكاش واستخدام متغيرات البيئة المحمية
+          # بناء الصورة مع تنظيف الكاش وحقن الأسرار بعلامات تنصيص
           docker build \
             --no-cache \
             --build-arg VITE_SUPABASE_URL="$VITE_SUPABASE_URL" \
@@ -23,13 +38,12 @@
           docker stop port-patrol || true
           docker rm port-patrol || true
           
-          # تشغيل الحاوية
+          # تشغيل الحاوية الجديدة
           docker run -d \
             --name port-patrol \
             --restart unless-stopped \
             -p 8003:80 \
             port-patrol-app
-      # تمرير الأسرار للأكشن ليقوم بتشفيرها وتأمينها
       env:
         VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
