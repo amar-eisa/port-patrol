@@ -1,18 +1,3 @@
-name: Deploy Port Patrol
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
     - name: Deploy to VPS
       uses: appleboy/ssh-action@v1.0.3
       with:
@@ -20,31 +5,24 @@ jobs:
         username: ${{ secrets.VPS_USER }}
         key: ${{ secrets.VPS_SSH_KEY }}
         port: 22
+        # تمرير المتغيرات كبيئة عمل للأكشن
+        envs: VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY
         script: |
-          # 1. حل مشكلة ملكية المجلد
-          git config --global --add safe.directory /var/www/port-patrol
-
-          # 2. الذهاب للمسار الصحيح للمشروع
           cd /var/www/port-patrol
-
-          # 3. إجبار السيرفر على سحب النسخة الجديدة وتجاهل أي تعديلات محلية
-          # هذا هو الجزء الذي يحل مشكلة عدم تحديث الكود
+          git config --global --add safe.directory /var/www/port-patrol
           git fetch --all
           git reset --hard origin/main
-
-          # 4. بناء صورة الدوكر
+          
+          # البناء باستخدام المتغيرات المستلمة
           docker build \
-            --build-arg VITE_SUPABASE_URL="${{ secrets.VITE_SUPABASE_URL }}" \
-            --build-arg VITE_SUPABASE_ANON_KEY="${{ secrets.VITE_SUPABASE_ANON_KEY }}" \
+            --build-arg VITE_SUPABASE_URL="$VITE_SUPABASE_URL" \
+            --build-arg VITE_SUPABASE_ANON_KEY="$VITE_SUPABASE_ANON_KEY" \
+            --no-cache \
             -t port-patrol-app .
-
-          # 5. إيقاف وحذف الحاوية القديمة
+            
           docker stop port-patrol || true
           docker rm port-patrol || true
-
-          # 6. تشغيل الحاوية الجديدة على المنفذ 8003
-          docker run -d \
-            --name port-patrol \
-            --restart unless-stopped \
-            -p 8003:80 \
-            port-patrol-app
+          docker run -d --name port-patrol --restart unless-stopped -p 8003:80 port-patrol-app
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
