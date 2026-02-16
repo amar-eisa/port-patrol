@@ -5,7 +5,7 @@
         username: ${{ secrets.VPS_USER }}
         key: ${{ secrets.VPS_SSH_KEY }}
         port: 22
-        # تمرير المتغيرات كبيئة عمل للأكشن
+        # --- السطر السحري لحل المشكلة ---
         envs: VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY
         script: |
           cd /var/www/port-patrol
@@ -13,16 +13,23 @@
           git fetch --all
           git reset --hard origin/main
           
-          # البناء باستخدام المتغيرات المستلمة
+          # البناء مع تنظيف الكاش واستخدام متغيرات البيئة المحمية
           docker build \
+            --no-cache \
             --build-arg VITE_SUPABASE_URL="$VITE_SUPABASE_URL" \
             --build-arg VITE_SUPABASE_ANON_KEY="$VITE_SUPABASE_ANON_KEY" \
-            --no-cache \
             -t port-patrol-app .
             
           docker stop port-patrol || true
           docker rm port-patrol || true
-          docker run -d --name port-patrol --restart unless-stopped -p 8003:80 port-patrol-app
+          
+          # تشغيل الحاوية
+          docker run -d \
+            --name port-patrol \
+            --restart unless-stopped \
+            -p 8003:80 \
+            port-patrol-app
+      # تمرير الأسرار للأكشن ليقوم بتشفيرها وتأمينها
       env:
         VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
