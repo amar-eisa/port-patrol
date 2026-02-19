@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Container, User } from "lucide-react";
+
 interface ContainersTableProps {
   containers: ContainerInfo[];
 }
+
 const ContainersTable = ({ containers }: ContainersTableProps) => {
   return (
     <Card>
@@ -22,7 +24,7 @@ const ContainersTable = ({ containers }: ContainersTableProps) => {
               <TableHead className="text-right">اسم الحاوية</TableHead>
               <TableHead className="text-right">ID</TableHead>
               <TableHead className="text-right">الحالة</TableHead>
-               <TableHead className="text-right">البورت</TableHead>
+              <TableHead className="text-right">البورت</TableHead>
               <TableHead className="text-right">المالك</TableHead>
             </TableRow>
           </TableHeader>
@@ -41,10 +43,9 @@ const ContainersTable = ({ containers }: ContainersTableProps) => {
                     {c.status.toLowerCase().includes("up") ? "running" : "exited"}
                   </Badge>
                 </TableCell>
-                
                 <TableCell className="font-mono text-xs">
                   {c.port && c.port !== "None" ? c.port : "-"}
-                </TableCell> 
+                </TableCell>
                 <TableCell>
                   <span className="flex items-center gap-1 text-xs">
                     <User className="h-3 w-3 text-muted-foreground" />
@@ -59,4 +60,5 @@ const ContainersTable = ({ containers }: ContainersTableProps) => {
     </Card>
   );
 };
+
 export default ContainersTable;
