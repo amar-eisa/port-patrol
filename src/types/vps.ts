@@ -46,5 +46,6 @@ export interface ContainerInfo {
   id: string;
   name: string;
   status: string;
+    port: string;
   owner: string;
 }
